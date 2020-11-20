@@ -1,0 +1,64 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Testbed API",
+    "version": "1.0",
+    "description": "API for Testbed project.",
+    "x-logo": {
+      "url": ""
+    }
+  },
+  "paths": {
+    "/": {
+      "summary": "Returns public metadata about the API",
+      "get": {
+        "tags": [],
+        "responses": {
+          "200": {
+            "type": "",
+            "description": "",
+            "$ref": "#/components/schemas/AppMetadata",
+            "x-last-modified": 1605886225681
+          }
+        },
+        "operationId": "appMetadata",
+        "summary": "Returns basic metadata about API"
+      },
+      "x-last-modified": 1605886200344
+    }
+  },
+  "components": {
+    "schemas": {
+      "AppMetadata": {
+        "type": "object",
+        "enum": [],
+        "required": [],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The name of the API implementation, e.g. testbed-java-spring-boot"
+          },
+          "version": {
+            "type": "string",
+            "description": "The version of the API implementation. Should follow SemVer standard."
+          },
+          "hostname": {
+            "type": "string",
+            "description": "The hostname that this instance of the API is running on."
+          }
+        },
+        "x-last-modified": 1605886137234
+      }
+    },
+    "responses": {},
+    "parameters": {},
+    "examples": {},
+    "requestBodies": {},
+    "headers": {},
+    "securitySchemes": {},
+    "links": {},
+    "callbacks": {}
+  },
+  "security": [],
+  "tags": []
+}

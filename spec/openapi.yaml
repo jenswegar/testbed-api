@@ -16,17 +16,19 @@ paths:
   /:
     summary: Returns public metadata about the API
     get:
-      tags: []
+      tags:
+      - App metadata
       responses:
         '200':
           $ref: '#/components/schemas/AppMetadata'
           description: Successful operation
           type: ''
       operationId: appMetadata
-  /question:
-    summary: 'Handle quiz questions '
+  /questions:
+    summary: 'Handle quiz questions'
     get:
-      tags: []
+      tags:
+      - Questions
       responses:
         '200':
           content:
@@ -46,7 +48,8 @@ paths:
             schema:
               $ref: '#/components/schemas/Question'
             example: ''
-      tags: []
+      tags:
+      - Questions
       responses:
         '200':
           content:
@@ -57,9 +60,10 @@ paths:
           description: successful operation
       operationId: postQuestion
       description: Add new question.
-  '/question/{questionId}':
+  '/questions/{questionId}':
     get:
-      tags: []
+      tags:
+      - Questions
       operationId: getQuestion
       parameters:
         - name: questionId
@@ -81,7 +85,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/Question'
     delete:
-      tags: []
+      tags:
+      - Questions
       operationId: deleteQuestion
       parameters:
         - name: questionId
@@ -99,7 +104,8 @@ paths:
         '200':
           description: successful operation
     patch:
-      tags: []
+      tags:
+      - Questions
       operationId: updateQuestion
       description: Updates a question with new data
       parameters:
@@ -127,9 +133,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Question'
-  /question/random:
+  /questions/random:
     get:
-      tags: []
+      tags:
+      - Questions
       operationId: getRandomQuestion
       parameters: []
       responses:

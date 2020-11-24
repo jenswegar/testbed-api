@@ -38,7 +38,7 @@ paths:
           description: successful operation
       operationId: getQuestions
       summary: ''
-      description: return list of questions
+      description: Return list of questions.
     post:
       requestBody:
         content:
@@ -55,6 +55,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/Question'
           description: successful operation
+      operationId: postQuestion
+      description: Add new question.
   '/question/{questionId}':
     get:
       tags: []

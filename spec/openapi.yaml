@@ -1,4 +1,6 @@
 openapi: 3.0.3
+
+# Info section
 info:
   title: Testbed API
   version: '1.0.0'
@@ -11,7 +13,11 @@ info:
   contact:
     name: Jens Wegar
     email: jens.wegar@gmail.com
+
+# Servers section
 servers: []
+
+# Paths section
 paths:
   /:
     summary: Returns public metadata about the API
@@ -20,10 +26,14 @@ paths:
       - App metadata
       responses:
         '200':
-          $ref: '#/components/schemas/AppMetadata'
           description: Successful operation
-          type: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppMetadata'
       operationId: appMetadata
+
+# Questions
   /questions:
     summary: 'Handle quiz questions'
     get:
@@ -35,6 +45,7 @@ paths:
             application/json:
               schema:
                 type: array
+                minItems: 0
                 items:
                   $ref: '#/components/schemas/Question'
           description: successful operation
@@ -42,41 +53,28 @@ paths:
       summary: ''
       description: Return list of questions.
     post:
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Question'
-            example: ''
       tags:
       - Questions
+      requestBody:
+        $ref: '#/components/requestBodies/CreateQuestion'
       responses:
-        '200':
+        '201':
           content:
             application/json:
               encoding: {}
               schema:
                 $ref: '#/components/schemas/Question'
-          description: successful operation
+          description: Created
       operationId: postQuestion
       description: Add new question.
+
   '/questions/{questionId}':
     get:
       tags:
       - Questions
       operationId: getQuestion
       parameters:
-        - name: questionId
-          in: path
-          example: ''
-          required: true
-          deprecated: false
-          description: The numeric id of the question
-          schema:
-            example: ''
-            type: integer
-            format: ''
-            pattern: ''
+        - $ref: '#/components/parameters/QuestionId'
       responses:
         '200':
           description: The question
@@ -125,7 +123,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Question'
-            example: ''
       responses:
         '200':
           description: The updated question
@@ -133,6 +130,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Question'
+
   /questions/random:
     get:
       tags:
@@ -146,76 +144,146 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Question'
+
+# Components section
 components:
+
+  requestBodies:
+    CreateQuestion:
+      description: Create a new question
+      required: true
+      content:
+        application/json:
+          schema:
+            properties:
+              answerOptions:
+                type: array
+                items:
+                  allOf:
+                    - $ref: '#/components/schemas/AnswerOptionProperties'
+                    - $ref: '#/components/schemas/AnswerOptionRequiredProperties'
+            allOf:
+              - $ref: '#/components/schemas/QuestionProperties'
+              - $ref: '#/components/schemas/QuestionRequiredProperties'
+    CreateAnswerOption:
+      description: Create a new answer option
+      required: true
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/AnswerOptionProperties'
+              - $ref: '#/components/schemas/AnswerOptionRequiredProperties'
+
+  parameters:
+    QuestionId:
+      name: questionId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/Id'
+
+    AnswerOptionId:
+      name: answerOptionId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/Id'
+
   schemas:
+
     AppMetadata:
       type: object
       description: Represents basic metadata about the API.
       properties:
         name:
-          description: 'The name of the API implementation, e.g. testbed-java-spring-boot'
+          description: 'The name of the API implementation'
           type: string
+          example: "testbed-java-spring-boot"
         version:
           description: >-
             The version of the API implementation. Should follow SemVer
             standard.
           type: string
+          example: "1.2.3"
         hostname:
           description: The hostname that this instance of the API is running on.
           type: string
+          example: "somehostname"
+
+    Id:
+      description: A unique identifier for this entity
+      type: integer
+      format: int64
+      example: 1234
+
     Question:
-      description: Represents a Question that has a defined set of AnswerOptions.
-      required:
-        - text
-      type: object
       properties:
-        id:
-          description: A unique id for this entity.
-          type: integer
-          format: int64
-        text:
-          description: The text of the question to ask
-          type: string
         answerOptions:
           type: array
           items:
             $ref: '#/components/schemas/AnswerOption'
-      example: ''
-    AnswerOption:
-      description: Represents a single answer option to a question.
-      required:
-        - questionId
-        - text
+      allOf:
+        - $ref: '#/components/schemas/QuestionId'
+        - $ref: '#/components/schemas/QuestionProperties'
+        - $ref: '#/components/schemas/QuestionRequiredProperties'
+
+    QuestionId:
       type: object
       properties:
         id:
-          description: A unique id for this entity.
-          type: integer
-          format: int64
-        questionId:
-          description: The id of the question this option relates to.
-          type: integer
+          $ref: '#/components/schemas/Id'
+
+    QuestionProperties:
+      type: object
+      properties:
         text:
           description: The text of the question to ask
           type: string
-        isCorrect:
-          description: Marks if this is a correct answer to a question or not.
-          type: boolean
-    User:
-      description: Represents a user of the system.
+          example: "What is the size of the universe?"
+
+    QuestionRequiredProperties:
+      type: object
+      required:
+        - text
+
+    AnswerOptionId:
       type: object
       properties:
         id:
-          description: A unique id for this entity.
-          type: integer
-          format: int64
-        displayName:
-          description: The name of the user for display on public facing pages.
+          $ref: '#/components/schemas/Id'
+
+    AnswerOptionProperties:
+      type: object
+      properties:
+        text:
+          description: The text describing the answer option
           type: string
-        username:
-          description: A unique username identifying this user within the system.
-          type: string
+          example: "Super duper small."
+        isCorrect:
+          description: Marks if this is a correct answer to the referenced question or not.
+          type: boolean
+          example: false
+
+    AnswerOptionRequiredProperties:
+      type: object
+      required:
+        - text
+        - isCorrect
+
+    AnswerOption:
+      description: Represents a single answer option to a question.
+      properties:
+        questionId:
+          $ref: '#/components/schemas/Id'
+      allOf:
+        - $ref: '#/components/schemas/AnswerOptionId'
+        - $ref: '#/components/schemas/AnswerOptionProperties'
+        - $ref: '#/components/schemas/AnswerOptionRequiredProperties'
+
+# Security schemes section
   securitySchemes: {}
+
+# Responses section
   responses: {}
-  parameters: {}
 tags: []

@@ -12,3 +12,10 @@ The specifications were built using [Apibldr](https://www.apibldr.com/), but sho
 * [testbed-nodejs-express](https://github.com/jenswegar/testbed-nodejs-express)
 * [testbed-php-symfony](https://github.com/jenswegar/testbed-php-symfony)
 * [testbed-java-spring-boot](https://github.com/jenswegar/testbed-java-spring-boot)
+
+
+## Data storage
+
+Each project will store data in it's own database instance. A database supporting MySQL dialect should be used. The project should be able to set up and verify it's own schema.
+
+

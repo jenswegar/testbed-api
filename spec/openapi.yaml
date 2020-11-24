@@ -1,0 +1,212 @@
+openapi: 3.0.3
+info:
+  title: Testbed API
+  version: '1.0'
+  description: API for Testbed project.
+  x-logo:
+    url: ''
+  license:
+    name: MIT
+    url: 'https://opensource.org/licenses/MIT'
+  contact:
+    name: Jens Wegar
+    email: jens.wegar@gmail.com
+servers: []
+paths:
+  /:
+    summary: Returns public metadata about the API
+    get:
+      tags: []
+      responses:
+        '200':
+          $ref: '#/components/schemas/AppMetadata'
+          description: Successful operation
+          type: ''
+      operationId: appMetadata
+  /question:
+    summary: 'Handle quiz questions '
+    get:
+      tags: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Question'
+          description: successful operation
+      operationId: getQuestions
+      summary: ''
+      description: return list of questions
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Question'
+            example: ''
+      tags: []
+      responses:
+        '200':
+          content:
+            application/json:
+              encoding: {}
+              schema:
+                $ref: '#/components/schemas/Question'
+          description: successful operation
+  '/question/{questionId}':
+    get:
+      tags: []
+      operationId: getQuestion
+      parameters:
+        - name: questionId
+          in: path
+          example: ''
+          required: true
+          deprecated: false
+          description: The numeric id of the question
+          schema:
+            example: ''
+            type: integer
+            format: ''
+            pattern: ''
+      responses:
+        '200':
+          description: The question
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Question'
+    delete:
+      tags: []
+      operationId: deleteQuestion
+      parameters:
+        - name: questionId
+          in: path
+          example: ''
+          required: true
+          deprecated: false
+          description: The numeric id of the question to delete
+          schema:
+            example: ''
+            type: integer
+            format: ''
+            pattern: ''
+      responses:
+        '200':
+          description: successful operation
+    patch:
+      tags: []
+      operationId: updateQuestion
+      description: Updates a question with new data
+      parameters:
+        - name: questionId
+          in: path
+          example: ''
+          required: true
+          deprecated: false
+          description: The numeric id of the question
+          schema:
+            example: '123'
+            type: integer
+            format: int64
+            pattern: ''
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Question'
+            example: ''
+      responses:
+        '200':
+          description: The updated question
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Question'
+  /question/random:
+    get:
+      tags: []
+      operationId: getRandomQuestion
+      parameters: []
+      responses:
+        '200':
+          description: A random question
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Question'
+components:
+  schemas:
+    AppMetadata:
+      type: object
+      description: Represents basic metadata about the API.
+      properties:
+        name:
+          description: 'The name of the API implementation, e.g. testbed-java-spring-boot'
+          type: string
+        version:
+          description: >-
+            The version of the API implementation. Should follow SemVer
+            standard.
+          type: string
+        hostname:
+          description: The hostname that this instance of the API is running on.
+          type: string
+    Question:
+      description: Represents a Question that has a defined set of AnswerOptions.
+      required:
+        - text
+      type: object
+      properties:
+        id:
+          description: A unique id for this entity.
+          type: integer
+          format: int64
+        text:
+          description: The text of the question to ask
+          type: string
+        answerOptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnswerOption'
+      example: ''
+    AnswerOption:
+      description: Represents a single answer option to a question.
+      required:
+        - questionId
+        - text
+      type: object
+      properties:
+        id:
+          description: A unique id for this entity.
+          type: integer
+          format: int64
+        questionId:
+          description: The id of the question this option relates to.
+          type: integer
+        text:
+          description: The text of the question to ask
+          type: string
+        isCorrect:
+          description: Marks if this is a correct answer to a question or not.
+          type: boolean
+    User:
+      description: Represents a user of the system.
+      type: object
+      properties:
+        id:
+          description: A unique id for this entity.
+          type: integer
+          format: int64
+        displayName:
+          description: The name of the user for display on public facing pages.
+          type: string
+        username:
+          description: A unique username identifying this user within the system.
+          type: string
+  securitySchemes: {}
+  responses: {}
+  parameters: {}
+tags: []

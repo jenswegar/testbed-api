@@ -5,7 +5,7 @@ This is part of a project to compare different programming languages and their p
 
 ## Modifying specifications
 
-The specifications were built using [Apibldr](https://www.apibldr.com/), but should be editable by any OpenAPI 3.0 compatible editor. Import ```spec/openapi.json``` to the editor, make the changes, export/save back.
+The specifications were built using [Apibldr](https://www.apibldr.com/), but should be editable by any OpenAPI 3.0 compatible editor. Import ```spec/openapi.yaml``` to the editor, make the changes, export/save back.
 
 ## Sub projects
 

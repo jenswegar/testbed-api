@@ -15,7 +15,9 @@ info:
     email: jens.wegar@gmail.com
 
 # Servers section
-servers: []
+servers:
+  - url: http://localhost:8080
+    description: Local development server
 
 # Paths section
 paths:
@@ -33,14 +35,15 @@ paths:
                 $ref: '#/components/schemas/AppMetadata'
       operationId: appMetadata
 
-# Questions
   /questions:
-    summary: 'Handle quiz questions'
+    summary: Handles quiz questions
     get:
+      operationId: getQuestions
       tags:
-      - Questions
+        - Questions
       responses:
         '200':
+          description: Return list of questions
           content:
             application/json:
               schema:
@@ -48,149 +51,142 @@ paths:
                 minItems: 0
                 items:
                   $ref: '#/components/schemas/Question'
-          description: successful operation
-      operationId: getQuestions
-      summary: ''
-      description: Return list of questions.
     post:
+      operationId: createQuestion
       tags:
-      - Questions
+        - Questions
       requestBody:
-        $ref: '#/components/requestBodies/CreateQuestion'
-      responses:
-        '201':
-          content:
-            application/json:
-              encoding: {}
-              schema:
-                $ref: '#/components/schemas/Question'
-          description: Created
-      operationId: postQuestion
-      description: Add new question.
-
-  '/questions/{questionId}':
-    get:
-      tags:
-      - Questions
-      operationId: getQuestion
-      parameters:
-        - $ref: '#/components/parameters/QuestionId'
-      responses:
-        '200':
-          description: The question
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Question'
-    delete:
-      tags:
-      - Questions
-      operationId: deleteQuestion
-      parameters:
-        - name: questionId
-          in: path
-          example: ''
-          required: true
-          deprecated: false
-          description: The numeric id of the question to delete
-          schema:
-            example: ''
-            type: integer
-            format: ''
-            pattern: ''
-      responses:
-        '200':
-          description: successful operation
-    patch:
-      tags:
-      - Questions
-      operationId: updateQuestion
-      description: Updates a question with new data
-      parameters:
-        - name: questionId
-          in: path
-          example: ''
-          required: true
-          deprecated: false
-          description: The numeric id of the question
-          schema:
-            example: '123'
-            type: integer
-            format: int64
-            pattern: ''
-      requestBody:
+        description: Create a new question
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Question'
+              $ref: '#/components/schemas/QuestionRequest'
+      responses:
+        '201':
+           description: Created
+           content:
+             application/json:
+               schema:
+                 $ref: '#/components/schemas/Question'
+
+  /questions/{id}:
+    parameters:
+      - $ref: '#/components/parameters/PathId'
+
+    get:
+      operationId: getQuestion
+      tags:
+        - Questions
       responses:
         '200':
-          description: The updated question
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Question'
+           description: Updated
+           content:
+             application/json:
+               schema:
+                 $ref: '#/components/schemas/Question'
+
+    put:
+      operationId: updateQuestion
+      tags:
+        - Questions
+      requestBody:
+        description: Update an existing question
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuestionRequest'
+      responses:
+        '200':
+           description: Updated
+           content:
+             application/json:
+               schema:
+                 $ref: '#/components/schemas/Question'
+
+    delete:
+      operationId: deleteQuestion
+      tags:
+        - Questions
+      responses:
+        '204':
+           description: Deleted
 
   /questions/random:
     get:
-      tags:
-      - Questions
       operationId: getRandomQuestion
-      parameters: []
+      tags:
+        - Questions
       responses:
         '200':
-          description: A random question
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Question'
+           description: Return a random question
+           content:
+             application/json:
+               schema:
+                 $ref: '#/components/schemas/Question'
 
-# Components section
 components:
 
-  requestBodies:
-    CreateQuestion:
-      description: Create a new question
-      required: true
-      content:
-        application/json:
-          schema:
-            properties:
-              answerOptions:
-                type: array
-                items:
-                  allOf:
-                    - $ref: '#/components/schemas/AnswerOptionProperties'
-                    - $ref: '#/components/schemas/AnswerOptionRequiredProperties'
-            allOf:
-              - $ref: '#/components/schemas/QuestionProperties'
-              - $ref: '#/components/schemas/QuestionRequiredProperties'
-    CreateAnswerOption:
-      description: Create a new answer option
-      required: true
-      content:
-        application/json:
-          schema:
-            allOf:
-              - $ref: '#/components/schemas/AnswerOptionProperties'
-              - $ref: '#/components/schemas/AnswerOptionRequiredProperties'
+  # convention:
+  # - *Request components define properties for POST requests
+  # - *ReadOnly components define properties that may be part of
+  #   some requests, but are not modifiable by the request.
 
   parameters:
-    QuestionId:
-      name: questionId
-      in: path
-      required: true
-      schema:
-        $ref: '#/components/schemas/Id'
-
-    AnswerOptionId:
-      name: answerOptionId
+    PathId:
+      name: id
       in: path
       required: true
       schema:
         $ref: '#/components/schemas/Id'
 
   schemas:
+    # Common properties
+    Id:
+      description: A unique identifier for this entity
+      type: integer
+      format: int64
+      example: 1234
+      minimum: 1
+
+    Created:
+      description: The date/time when the entity was created
+      type: string
+      format: date-time
+      example: 2020-03-20T09:12:28Z
+
+    Modified:
+      description: The date/time when the entity was last modified
+      type: string
+      format: date-time
+      example: 2020-03-20T15:12:28Z
+
+    # Question related schemas
+    QuestionRequest:
+      required:
+        - "text"
+      properties:
+        text:
+          description: The text of the question to ask
+          type: string
+          minLength: 1
+          example: What is the size of the universe?
+
+    QuestionReadOnly:
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        created:
+          $ref: '#/components/schemas/Created'
+        modified:
+          $ref: '#/components/schemas/Modified'
+
+    Question:
+      allOf:
+        - $ref: '#/components/schemas/QuestionReadOnly'
+        - $ref: '#/components/schemas/QuestionRequest'
+
 
     AppMetadata:
       type: object
@@ -211,79 +207,10 @@ components:
           type: string
           example: "somehostname"
 
-    Id:
-      description: A unique identifier for this entity
-      type: integer
-      format: int64
-      example: 1234
-
-    Question:
-      properties:
-        answerOptions:
-          type: array
-          items:
-            $ref: '#/components/schemas/AnswerOption'
-      allOf:
-        - $ref: '#/components/schemas/QuestionId'
-        - $ref: '#/components/schemas/QuestionProperties'
-        - $ref: '#/components/schemas/QuestionRequiredProperties'
-
-    QuestionId:
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/Id'
-
-    QuestionProperties:
-      type: object
-      properties:
-        text:
-          description: The text of the question to ask
-          type: string
-          example: "What is the size of the universe?"
-
-    QuestionRequiredProperties:
-      type: object
-      required:
-        - text
-
-    AnswerOptionId:
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/Id'
-
-    AnswerOptionProperties:
-      type: object
-      properties:
-        text:
-          description: The text describing the answer option
-          type: string
-          example: "Super duper small."
-        isCorrect:
-          description: Marks if this is a correct answer to the referenced question or not.
-          type: boolean
-          example: false
-
-    AnswerOptionRequiredProperties:
-      type: object
-      required:
-        - text
-        - isCorrect
-
-    AnswerOption:
-      description: Represents a single answer option to a question.
-      properties:
-        questionId:
-          $ref: '#/components/schemas/Id'
-      allOf:
-        - $ref: '#/components/schemas/AnswerOptionId'
-        - $ref: '#/components/schemas/AnswerOptionProperties'
-        - $ref: '#/components/schemas/AnswerOptionRequiredProperties'
-
 # Security schemes section
   securitySchemes: {}
 
 # Responses section
   responses: {}
+
 tags: []
